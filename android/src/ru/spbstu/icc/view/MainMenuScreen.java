@@ -13,7 +13,8 @@ import ru.spbstu.icc.controller.MyGame;
 
 
 public class MainMenuScreen implements Screen {
-    private final MyGame game;
+
+    private MyGame game;
     private OrthographicCamera camera;
     private boolean spawnQuery;
     private boolean needToPlaySound;
@@ -21,6 +22,9 @@ public class MainMenuScreen implements Screen {
     private Sound startOfGameSound;
     private Sound startingSound;
 
+    private ScreenTemplate screenTemplate;
+
+    private final int ONE_SECOND = 1000000000;
 
     public MainMenuScreen(MyGame myGame) {
         this.game = myGame;
@@ -30,9 +34,38 @@ public class MainMenuScreen implements Screen {
 
         startOfGameSound = Gdx.audio.newSound(Gdx.files.internal("startOfGame.mp3"));
         startingSound = Gdx.audio.newSound(Gdx.files.internal("startingSound.mp3"));
-        
+
         needToPlaySound = true;
         spawnQuery = true;
+
+        screenTemplate = new ScreenTemplate() {
+            @Override
+            public void checkTouch() {
+                if (!game.isPause()) {
+                    if (Gdx.input.justTouched() && Gdx.input.getY() < 150 && Gdx.input.getX() < 150) { // pause button location
+                        game.setPause();
+                    } else if (Gdx.input.justTouched() && TimeUtils.nanoTime() - game.getTimeForDelay() > ONE_SECOND) {
+                        game.saveName();
+                        game.setScreen(new GameScreen(game));
+                        startingSound.play();
+                        dispose();
+                    }
+                }
+            }
+
+            @Override
+            public void createFont() {
+                FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("19167.ttf"));
+                FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+                parameter.size = 100;
+                parameter.borderWidth = 1;
+                parameter.color = Color.BLACK;
+                game.setFont(generator, parameter);
+                generator.dispose();
+            }
+        };
+
+        screenTemplate.createFont();
     }
 
 
@@ -43,36 +76,10 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        createFont();
-
         draw();
-
-        checkTouch();
+        screenTemplate.checkTouch();
     }
 
-    private void createFont() {
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("19167.ttf"));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 100;
-        parameter.borderWidth = 1;
-        parameter.color = Color.BLACK;
-        game.setFont(generator, parameter);
-        generator.dispose();
-    }
-
-
-    private void checkTouch() {
-        if (!game.isPause()) {
-            if (Gdx.input.justTouched() && Gdx.input.getY() < 150 && Gdx.input.getX() < 150) {
-                game.setPause();
-            } else if (Gdx.input.justTouched() && TimeUtils.nanoTime() - game.getTimeForDelay() > 1000000000) {
-                game.saveName();
-                game.setScreen(new GameScreen(game));
-                startingSound.play();
-                dispose();
-            }
-        }
-    }
 
     private void draw() {
         Gdx.gl.glClearColor(0.16f, 0.69f, 0.65f, 1);

@@ -33,7 +33,6 @@ public class DBHelper {
             dbHandler.openOrCreateDatabase();
             dbHandler.execSQL(DATABASE_CREATE);
         } catch (SQLiteGdxException e) {
-            e.printStackTrace();
         }
 
         DatabaseCursor cursor = null;
@@ -52,7 +51,6 @@ public class DBHelper {
                         "VALUES ('Nekita', '150')");
             }
         } catch (SQLiteGdxException e) {
-            e.printStackTrace();
         }
         cursor.close();
     }
@@ -64,7 +62,6 @@ public class DBHelper {
         try {
             cursor = dbHandler.rawQuery("SELECT score FROM players WHERE name = '" + name + "'");
         } catch (SQLiteGdxException e) {
-            e.printStackTrace();
         }
 
         if (cursor.next()) {
@@ -73,7 +70,6 @@ public class DBHelper {
                 try {
                     dbHandler.execSQL("UPDATE players SET score = '" + score + "' WHERE name = '" + name + "'");
                 } catch (SQLiteGdxException e) {
-                    e.printStackTrace();
                 }
             }
         } else {
@@ -81,7 +77,6 @@ public class DBHelper {
                 dbHandler.execSQL("INSERT INTO " + TABLE_PLAYERS + " ('name', 'score') " +
                         "VALUES ('" + name + "', '" + score + "')");
             } catch (SQLiteGdxException e) {
-                e.printStackTrace();
             }
         }
         cursor.close();
@@ -102,7 +97,6 @@ public class DBHelper {
                 Gdx.app.log("cursor: ", "" + name + ", " + score);
             }
         } catch (SQLiteGdxException e) {
-            e.printStackTrace();
         }
         cursor.close();
         return result;
@@ -112,7 +106,6 @@ public class DBHelper {
         try {
             dbHandler.closeDatabase();
         } catch (SQLiteGdxException e) {
-            e.printStackTrace();
         }
         dbHandler = null;
     }

@@ -144,6 +144,7 @@ public class MyGame extends Game {
         TimeForDelay = TimeUtils.nanoTime();
     }
 
+
     @Override
     public void pause(){
         batch.draw(pauseMenu, 0, 0);
@@ -151,14 +152,14 @@ public class MyGame extends Game {
                 Gdx.input.getY() > 356 &&
                 Gdx.input.getY() < 597 &&
                 Gdx.input.getX() > 446 &&
-                Gdx.input.getX() < 1476) {
+                Gdx.input.getX() < 1476) { // game continuation button location
             determineTimeForDelay();
             isPause = false;
         } else if (Gdx.input.justTouched() &&
                 Gdx.input.getY() > 655 &&
                 Gdx.input.getY() < 836 &&
                 Gdx.input.getX() > 446 &&
-                Gdx.input.getX() < 1476) {
+                Gdx.input.getX() < 1476) {  // location of the name change button
             currentPlayer = null;
         }
     }
