@@ -9,8 +9,9 @@ import com.badlogic.gdx.sql.SQLiteGdxException;
 import com.badlogic.gdx.utils.ArrayMap;
 
 
-public class DBHelper {
+public final class DBHelper {
 
+    private static DBHelper DBHelper;
     private static Database dbHandler;
 
     private static final int DATABASE_VERSION = 3;
@@ -21,11 +22,12 @@ public class DBHelper {
     private static final String PLAYER_NAME = "name";
     private static final String PLAYER_SCORE = "score";
 
-    private static final String DATABASE_CREATE = "create table " + TABLE_PLAYERS + "(" + PLAYER_ID
+    private static final String DATABASE_CREATE = "create table if not exists" + TABLE_PLAYERS + "(" + PLAYER_ID
             + " integer primary key, " + PLAYER_NAME + " text, " + PLAYER_SCORE + " integer" + ")";
 
+    private static final String ADDING_PLAYER = "INSERT INTO " + TABLE_PLAYERS + " ('name', 'score') " + "VALUES ";
 
-    public void DatabaseStart() {
+    private DBHelper() {
         dbHandler = DatabaseFactory.getNewDatabase(DATABASE_NAME,
                 DATABASE_VERSION, DATABASE_CREATE, null);
         dbHandler.setupDatabase();
@@ -39,26 +41,27 @@ public class DBHelper {
         try {
             cursor = dbHandler.rawQuery("SELECT score FROM players");
             if (!cursor.next()) {
-                dbHandler.execSQL("INSERT INTO " + TABLE_PLAYERS + " ('name', 'score') " +
-                        "VALUES ('Pavel', '5')");
-                dbHandler.execSQL("INSERT INTO " + TABLE_PLAYERS + " ('name', 'score') " +
-                        "VALUES ('Sema', '10')");
-                dbHandler.execSQL("INSERT INTO " + TABLE_PLAYERS + " ('name', 'score') " +
-                        "VALUES ('Keril', '50')");
-                dbHandler.execSQL("INSERT INTO " + TABLE_PLAYERS + " ('name', 'score') " +
-                        "VALUES ('Pavel', '100')");
-                dbHandler.execSQL("INSERT INTO " + TABLE_PLAYERS + " ('name', 'score') " +
-                        "VALUES ('Nekita', '150')");
+                dbHandler.execSQL(ADDING_PLAYER + "('Pavel', '5')");
+                dbHandler.execSQL(ADDING_PLAYER + "('Sema', '10')");
+                dbHandler.execSQL(ADDING_PLAYER + "('Keril', '50')");
+                dbHandler.execSQL(ADDING_PLAYER + "('Pavel', '100')");
+                dbHandler.execSQL(ADDING_PLAYER + "('Nekita', '150')");
             }
         } catch (SQLiteGdxException e) {
         }
         cursor.close();
     }
 
+    public static DBHelper DatabaseStart() {
+        if (DBHelper == null) {
+            DBHelper = new DBHelper();
+        }
+        return DBHelper;
+    }
+
     public void addOrUpdatePlayer(String name, int score) {
 
         DatabaseCursor cursor = null;
-
         try {
             cursor = dbHandler.rawQuery("SELECT score FROM players WHERE name = '" + name + "'");
         } catch (SQLiteGdxException e) {

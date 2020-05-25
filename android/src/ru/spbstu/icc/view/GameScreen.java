@@ -2,19 +2,18 @@ package ru.spbstu.icc.view;
 
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import ru.spbstu.icc.controller.GameController;
+import ru.spbstu.icc.model.GameController;
 import ru.spbstu.icc.model.Drone;
-import ru.spbstu.icc.controller.MyGame;
+import ru.spbstu.icc.model.MyGame;
 
 
-public class GameScreen implements Screen {
+public class GameScreen extends ScreenAdapter {
 
     private final MyGame game;
     private OrthographicCamera camera;
@@ -29,6 +28,9 @@ public class GameScreen implements Screen {
     private Texture landscape;
 
     private ScreenTemplate screenTemplate;
+
+    private final int DRONE_WIDTH = 139;
+    private final int DRONE_HEIGHT = 60;
 
     public GameScreen(final MyGame game) {
         this.game = game;
@@ -45,35 +47,21 @@ public class GameScreen implements Screen {
 
         controller = new GameController(game);
 
-        screenTemplate = new ScreenTemplate() {
-            @Override
-            public void checkTouch() {
-                if (Gdx.input.justTouched() && Gdx.input.getY() < 150 && Gdx.input.getX() < 150) { // pause button location
-                    game.setPause();
-                } else if (Gdx.input.justTouched() && !game.isPause()) {
-                    Rectangle drone = new Rectangle();
-                    drone.x = 0;
-                    drone.y = 0;
-                    drone.height = 60;
-                    drone.width = 139;
-                    double angle = Math.atan((double) (game.getHeight() - Gdx.input.getY()) / (Gdx.input.getX()));
-                    controller.addDrone(drone, angle);
-                }
-            }
+        screenTemplate = new ScreenTemplate(game) {
 
             @Override
-            public void createFont() {
-                FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("19167.ttf"));
-                FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-                parameter.size = 40;
-                parameter.borderWidth = 1;
-                parameter.color = Color.BLACK;
-                game.setFont(generator, parameter);
-                generator.dispose();
+            public void touchAction(int screenX, int screenY) {
+                Rectangle drone = new Rectangle();
+                drone.x = 0;
+                drone.y = 0;
+                drone.height = DRONE_HEIGHT;
+                drone.width = DRONE_WIDTH;
+                double angle = Math.atan((double) (game.getHeight() - screenY) / screenX);
+                controller.addDrone(drone, angle);
             }
         };
 
-        screenTemplate.createFont();
+        screenTemplate.createFont(40);
     }
 
 

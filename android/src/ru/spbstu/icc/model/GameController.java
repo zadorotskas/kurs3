@@ -1,4 +1,4 @@
-package ru.spbstu.icc.controller;
+package ru.spbstu.icc.model;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
@@ -6,7 +6,6 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
-import ru.spbstu.icc.model.Drone;
 
 import java.util.Iterator;
 
@@ -27,7 +26,7 @@ public class GameController {
     private Array<Drone> drones;
     private Array<Drone> dronesWithFood;
 
-    public GameController(MyGame game){
+    public GameController(MyGame game) {
         this.game = game;
         flyingObj = new Array<>();
         spawnFood();
@@ -165,21 +164,20 @@ public class GameController {
         return flyingObj;
     }
 
-    public boolean isNeedToContinue(){
+    public boolean isNeedToContinue() {
         return needToContinue;
     }
 
-    public int getTotalScore(){
+    public int getTotalScore() {
         return totalScore;
     }
 
-    public void addDrone(Rectangle drone, double angle){
+    public void addDrone(Rectangle drone, double angle) {
         drones.add(new Drone(drone, angle));
     }
 
-    public void changeGameState(){
-        int ONE_SECOND = 1000000000;
-        if (TimeUtils.nanoTime() - lastFoodSpawn > ONE_SECOND) spawnFood();
+    public void changeGameState() {
+        if (TimeUtils.nanoTime() - lastFoodSpawn > game.ONE_SECOND) spawnFood();
         moveFood();
         moveDrones();
         moveDroneWithFood();

@@ -2,17 +2,17 @@ package ru.spbstu.icc.view;
 
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.TimeUtils;
-import ru.spbstu.icc.controller.MyGame;
+import ru.spbstu.icc.model.MyGame;
 
 
-public class MainMenuScreen implements Screen {
+public class MainMenuScreen extends ScreenAdapter {
 
     private MyGame game;
     private OrthographicCamera camera;
@@ -24,7 +24,6 @@ public class MainMenuScreen implements Screen {
 
     private ScreenTemplate screenTemplate;
 
-    private final int ONE_SECOND = 1000000000;
 
     public MainMenuScreen(MyGame myGame) {
         this.game = myGame;
@@ -38,34 +37,20 @@ public class MainMenuScreen implements Screen {
         needToPlaySound = true;
         spawnQuery = true;
 
-        screenTemplate = new ScreenTemplate() {
-            @Override
-            public void checkTouch() {
-                if (!game.isPause()) {
-                    if (Gdx.input.justTouched() && Gdx.input.getY() < 150 && Gdx.input.getX() < 150) { // pause button location
-                        game.setPause();
-                    } else if (Gdx.input.justTouched() && TimeUtils.nanoTime() - game.getTimeForDelay() > ONE_SECOND) {
-                        game.saveName();
-                        game.setScreen(new GameScreen(game));
-                        startingSound.play();
-                        dispose();
-                    }
-                }
-            }
+        screenTemplate = new ScreenTemplate(game) {
 
             @Override
-            public void createFont() {
-                FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("19167.ttf"));
-                FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-                parameter.size = 100;
-                parameter.borderWidth = 1;
-                parameter.color = Color.BLACK;
-                game.setFont(generator, parameter);
-                generator.dispose();
+            public void touchAction(int screenX, int screenY) {
+                if (TimeUtils.nanoTime() - game.getTimeForDelay() > game.ONE_SECOND) {
+                    game.saveName();
+                    game.setScreen(new GameScreen(game));
+                    startingSound.play();
+                    dispose();
+                }
             }
         };
 
-        screenTemplate.createFont();
+        screenTemplate.createFont(100);
     }
 
 

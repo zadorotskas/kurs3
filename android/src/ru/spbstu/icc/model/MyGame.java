@@ -1,17 +1,14 @@
-package ru.spbstu.icc.controller;
+package ru.spbstu.icc.model;
 
 
-import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.TimeUtils;
-import ru.spbstu.icc.model.DBHelper;
+import ru.spbstu.icc.view.GameScreen;
 import ru.spbstu.icc.view.MainMenuScreen;
 import com.badlogic.gdx.utils.ArrayMap;
 
@@ -35,6 +32,8 @@ public class MyGame extends Game {
     private DBHelper dbHelper;
 
     private Preferences lastPlayer;
+
+    public final int ONE_SECOND = 1000000000;
 
     public static class TextInputListener implements Input.TextInputListener {
         public String text;
@@ -60,8 +59,8 @@ public class MyGame extends Game {
         pauseMenu = new Texture("pauseMenu.png");
 
         isPause = false;
-        dbHelper = new DBHelper();
-        dbHelper.DatabaseStart();
+
+        dbHelper = DBHelper.DatabaseStart();
 
         lastPlayer = Gdx.app.getPreferences("lastPlayer");
         currentPlayer = lastPlayer.getString("name", null);
@@ -112,7 +111,7 @@ public class MyGame extends Game {
         batch.end();
     }
 
-    public boolean nameQuery(boolean spawnQuery){
+    public boolean nameQuery(boolean spawnQuery) {
         if (spawnQuery) {
             Gdx.input.getTextInput(listener, "Enter your name", "", "need your name....");
         }
@@ -124,44 +123,37 @@ public class MyGame extends Game {
         font = generator.generateFont(parameter);
     }
 
-    public void drawPause(){
-        batch.draw(pauseButton, 0,height - 53);
+    public void drawPause() {
+        batch.draw(pauseButton, 0, height - 53);
     }
 
-    public void setPause(){
+    public void setOnPause() {
         isPause = true;
     }
 
-    public boolean isPause(){
+    public void setOffPause() {
+        isPause = false;
+    }
+
+    public boolean isPause() {
         return isPause;
     }
 
-    public long getTimeForDelay(){
+    public long getTimeForDelay() {
         return TimeForDelay;
     }
 
-    public void determineTimeForDelay(){
+    public void determineTimeForDelay() {
         TimeForDelay = TimeUtils.nanoTime();
     }
 
+    public void deleteCurrentPlayerName(){
+        currentPlayer = null;
+    }
 
     @Override
-    public void pause(){
+    public void pause() {
         batch.draw(pauseMenu, 0, 0);
-        if (Gdx.input.justTouched() &&
-                Gdx.input.getY() > 356 &&
-                Gdx.input.getY() < 597 &&
-                Gdx.input.getX() > 446 &&
-                Gdx.input.getX() < 1476) { // game continuation button location
-            determineTimeForDelay();
-            isPause = false;
-        } else if (Gdx.input.justTouched() &&
-                Gdx.input.getY() > 655 &&
-                Gdx.input.getY() < 836 &&
-                Gdx.input.getX() > 446 &&
-                Gdx.input.getX() < 1476) {  // location of the name change button
-            currentPlayer = null;
-        }
     }
 
     @Override
