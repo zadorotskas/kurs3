@@ -22,7 +22,7 @@ public final class DBHelper {
     private static final String PLAYER_NAME = "name";
     private static final String PLAYER_SCORE = "score";
 
-    private static final String DATABASE_CREATE = "create table if not exists" + TABLE_PLAYERS + "(" + PLAYER_ID
+    private static final String DATABASE_CREATE = "create table if not exists " + TABLE_PLAYERS + "(" + PLAYER_ID
             + " integer primary key, " + PLAYER_NAME + " text, " + PLAYER_SCORE + " integer" + ")";
 
     private static final String ADDING_PLAYER = "INSERT INTO " + TABLE_PLAYERS + " ('name', 'score') " + "VALUES ";
@@ -34,7 +34,9 @@ public final class DBHelper {
         try {
             dbHandler.openOrCreateDatabase();
             dbHandler.execSQL(DATABASE_CREATE);
+            Gdx.app.log("db", "created");
         } catch (SQLiteGdxException e) {
+            Gdx.app.log("db", "not created");
         }
 
         DatabaseCursor cursor = null;
